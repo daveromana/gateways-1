@@ -10,6 +10,7 @@
  */
 
 $username 			= 'DEIN_USERNAME';   // Bitte hier den Usernamen eintragen, der auch in den FirEmergency-Parametern steht
+$user_id			= 'User_Id aus Joomla eintragen'; //Trage hier Deine User_Id aus Joomla ein !
 $api 				= '0000000000000';  // Secret-Key muss identisch dem aus den FirEmergency-Parametern sein.
 $alarmierungsart_id = '1';   		 	// Die ID-Nr. einer Alarmierungsart aus der Einsatzkomponente V3.x
 $einsatzart 		= "Einsatz";     	// Name einer Einsatzart aus der Einsatzkomponente V3.x
@@ -140,7 +141,7 @@ $bug ='100';$bugtext ='Einsatzmeldung war erfolgreich</br>';
 // Datenbank verbinden
 $dbconnect=mysql_connect($host,$dbuser,$dbpass);
  // Werte in Datenbank eintragen
-$query = "INSERT INTO `".$db_name."`.`".$dbprefix."eiko_einsatzberichte` (`id`, `asset_id`, `ordering`, `data1`, `image`, `address`, `date1`, `date2`, `date3`, `summary`, `boss`, `boss2`, `people`, `department`, `desc`, `alerting`, `gmap_report_latitude`, `gmap_report_longitude`, `counter`, `gmap`, `presse_label`, `presse`, `presse2_label`, `presse2`, `presse3_label`, `presse3`, `updatedate`, `einsatzticker`, `notrufticker`, `tickerkat`, `auswahlorga`, `vehicles`, `status`, `state`, `created_by`) VALUES ('', '0', '0', '".$einsatzart."', '', '".$ort."', '".$zeit."', '0000-00-00 00:00:00.000000', '0000-00-00 00:00:00.000000', '".$msg."', '', '', '', '0', '', '".$alarmierungsart_id."', '".$lat."', '".$lon."', '', '1', 'Presselink', '', 'Presselink', '', 'Presselink', '', '".$updatetime."', '', '', '', '".$organisation."', '', '', '1', '0');";
+$query = "INSERT INTO `".$db_name."`.`".$dbprefix."eiko_einsatzberichte` (`id`, `asset_id`, `ordering`, `data1`, `image`, `address`, `date1`, `date2`, `date3`, `summary`, `boss`, `boss2`, `people`, `department`, `desc`, `alerting`, `gmap_report_latitude`, `gmap_report_longitude`, `counter`, `gmap`, `presse_label`, `presse`, `presse2_label`, `presse2`, `presse3_label`, `presse3`, `updatedate`, `einsatzticker`, `notrufticker`, `tickerkat`, `auswahlorga`, `vehicles`, `status`, `state`, `created_by`) VALUES ('', '0', '0', '".$einsatzart."', '', '".$ort."', '".$zeit."', '0000-00-00 00:00:00.000000', '0000-00-00 00:00:00.000000', '".$msg."', '', '', '', '0', '', '".$alarmierungsart_id."', '".$lat."', '".$lon."', '', '1', 'Presselink', '', 'Presselink', '', 'Presselink', '', '".$updatetime."', '', '', '', '".$organisation."', '', '', '1', '".$user_id."');";
  
  
 
