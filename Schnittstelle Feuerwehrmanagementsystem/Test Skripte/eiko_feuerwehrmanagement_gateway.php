@@ -12,14 +12,14 @@
 $username 			= 'DEIN_USERNAME';   // Bitte hier den Usernamen eintragen, der auch in den FirEmergency-Parametern steht
 $api 				= '0000000000000';  // Secret-Key muss identisch dem aus den FirEmergency-Parametern sein.
 $alarmierungsart_id = '1';   		 	// Die ID-Nr. einer Alarmierungsart aus der Einsatzkomponente V3.x
-$organisation 		= "Freiwillige Feuerwehr Musterstadt"; // Bitte hier den Namen Ihrer Organisation aus der Einsatzkomponente eintragen
+$organisation_id 		= "1"; // Bitte hier die ID-Nr. Ihrer Organisation aus der Einsatzkomponente eintragen
 
 
 //      GET-Variabeln (*=Pflichtvariabeln) :
 //      $user    	= *Benutzername (einzugeben in den Optionen Ihres Programmes)
 //      $apikey  	= *Sicherheitsschlüssel (einzugeben in den Optionen Ihres Programmes)
 //      $zeit    	= *Zeit der Alarmierung (im Format Timestamp)
-//		$einsatzart = "stichwort";     	// Der Text muss mit der eingetragenden Einsatzart in der Einsatzkomponente V3.x identisch sein.
+//		$einsatzart_id = "1";     	// Die ID-Nr. muss mit der eingetragenden Einsatzart-ID in der Einsatzkomponente V3.x identisch sein.
 //      $msg     	= *Alarmierungstext
 //      $ort     	=  Einsatzort (natürlich müssen vorher Hausnummern entfernt werden. 
 //      $lon     	=  Koordinate Longitude 
@@ -52,7 +52,7 @@ setlocale(LC_ALL, 'de_DE.utf8');
 // Variabeln definieren
 $bug 				= '0';
 $user 				= '';
-$einsatzart 		= '';
+$einsatzart_id 		= '';
 $apikey 			= '';
 $alarmierungsZeit 	= '';
 $einsatzAusfahrt    = '';
@@ -87,7 +87,7 @@ $einsatzleiter =  mysql_real_escape_string(stripslashes($_GET['einsatzleiter']))
 
 $ort =  mysql_real_escape_string(stripslashes($_GET['ort']));
 $kat = mysql_real_escape_string(stripslashes($_GET['kat']));
-$einsatzart = mysql_real_escape_string(stripslashes($_GET['stichwort']));
+$einsatzart_id = mysql_real_escape_string(stripslashes($_GET['stichwort']));
    	// Der Text muss mit der eingetragenden Einsatzart in der Einsatzkomponente V3.x identisch sein.
 $msg = mysql_real_escape_string(stripslashes($_GET['beschreibung']));
 $lon  = mysql_real_escape_string(stripslashes($_GET['lon']));
@@ -124,7 +124,7 @@ $bug ='100';$bugtext ='Einsatzmeldung war erfolgreich</br>';
 // Datenbank verbinden
 $dbconnect=mysql_connect($host,$dbuser,$dbpass);
  // Werte in Datenbank eintragen
-$query = "INSERT INTO `".$db_name."`.`".$dbprefix."eiko_einsatzberichte` (`id`, `asset_id`, `ordering`, `data1`, `image`, `address`, `date1`, `date2`, `date3`, `summary`, `boss`, `boss2`, `people`, `department`, `desc`, `alerting`, `gmap_report_latitude`, `gmap_report_longitude`, `counter`, `gmap`, `presse_label`, `presse`, `presse2_label`, `presse2`, `presse3_label`, `presse3`, `updatedate`, `einsatzticker`, `notrufticker`, `tickerkat`, `auswahlorga`, `vehicles`, `status`, `state`, `created_by`) VALUES ('', '0', '0', '".$einsatzart."', '', '".$ort."', '".$alarmierungsZeit."', '".$einsatzAusfahrt."', '".$einsatzEnde."', '".$msg."', '', '', '', '0', '', '".$alarmierungsart_id."', '".$lat."', '".$lon."', '', '1', 'Presselink', '', 'Presselink', '', 'Presselink', '', '".$updatetime."', '', '', '', '".$organisation."', '', '', '".$state."', '0');";
+$query = "INSERT INTO `".$db_name."`.`".$dbprefix."eiko_einsatzberichte` (`id`, `asset_id`, `ordering`, `data1`, `image`, `address`, `date1`, `date2`, `date3`, `summary`, `boss`, `boss2`, `people`, `department`, `desc`, `alerting`, `gmap_report_latitude`, `gmap_report_longitude`, `counter`, `gmap`, `presse_label`, `presse`, `presse2_label`, `presse2`, `presse3_label`, `presse3`, `updatedate`, `einsatzticker`, `notrufticker`, `tickerkat`, `auswahlorga`, `vehicles`, `status`, `state`, `created_by`) VALUES ('', '0', '0', '".$einsatzart_id."', '', '".$ort."', '".$alarmierungsZeit."', '".$einsatzAusfahrt."', '".$einsatzEnde."', '".$msg."', '', '', '', '0', '', '".$alarmierungsart_id."', '".$lat."', '".$lon."', '', '1', 'Presselink', '', 'Presselink', '', 'Presselink', '', '".$updatetime."', '', '', '', '".$organisation_id."', '', '', '".$state."', '0');";
  
  
 
