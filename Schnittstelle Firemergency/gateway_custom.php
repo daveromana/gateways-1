@@ -27,7 +27,12 @@ $db_name 	=$config->db;
 $dbprefix 	=$config->dbprefix;
 
 
-mysql_connect($host, $dbuser,$dbpass) or die ("Keine Verbindung moeglich");
+$con = mysqli_connect($host, $dbuser,$dbpass,$db_name);
+// Check connection
+if (mysqli_connect_errno())
+  {
+  echo "Failed to connect to MySQL: " . mysqli_connect_error();
+  }
 
 date_default_timezone_set('Europe/Berlin'); 
 //date_default_timezone_set('UTC');
@@ -50,17 +55,17 @@ $bugtext 	= 'Fehler bei der Übertragung: </br>';
 
 
 // Übergabe-Parameter aus Url auslesen
-$user = mysql_real_escape_string(stripslashes($_GET['user']));
-$apikey = mysql_real_escape_string(stripslashes($_GET['apikey']));
-$timestamp = mysql_real_escape_string(stripslashes($_GET['zeit'])); 
+$user = mysqli_real_escape_string($con,stripslashes($_GET['user']));
+$apikey = mysqli_real_escape_string($con,stripslashes($_GET['apikey']));
+$timestamp = mysqli_real_escape_string($con,stripslashes($_GET['zeit'])); 
 $zeit = date("Y-m-d H:i:s",$timestamp); 	//Formatiert den Timestamp um in Y-m-d H:i:s zum speichern in die DB
 $updatetime = date( "Y-m-d H:i:s"); 
-$ort =  mysql_real_escape_string(stripslashes($_GET['ort']));
-$kat = mysql_real_escape_string(stripslashes($_GET['kat']));
-$msg = mysql_real_escape_string(stripslashes($_GET['msg']));
-$lon  = mysql_real_escape_string(stripslashes($_GET['lon']));
-$lat = mysql_real_escape_string(stripslashes($_GET['lat']));
-$debug = mysql_real_escape_string(stripslashes($_GET['debug']));
+$ort =  mysqli_real_escape_string($con,stripslashes($_GET['ort']));
+$kat = mysqli_real_escape_string($con,stripslashes($_GET['kat']));
+$msg = mysqli_real_escape_string($con,stripslashes($_GET['msg']));
+$lon  = mysqli_real_escape_string($con,stripslashes($_GET['lon']));
+$lat = mysqli_real_escape_string($con,stripslashes($_GET['lat']));
+$debug = mysqli_real_escape_string($con,stripslashes($_GET['debug']));
 
 
 //if ($debug =='1') :
@@ -111,12 +116,12 @@ else
       $ticketkatname = trim($matches[1]); // ueberfluessige Leerzeichen entfernen
       $einsatzartname = trim($matches[0]); // ueberfluessige Leerzeichen entfernen
       // EINSATZART START
-      $sql = "select id from ".$db_name.".".$dbprefix."eiko_einsatzarten where title ='" . mysql_real_escape_string($matches[1]) . "' LIMIT 1";
-      $result = mysql_query($sql); // Query ausführen
+      $sql = "select id from ".$db_name.".".$dbprefix."eiko_einsatzarten where title ='" . mysqli_real_escape_string($matches[1]) . "' LIMIT 1";
+      $result = mysqli_query($con,$sql); // Query ausführen
       if (!$result) { // Bei Fehler abbruch
         echo mysql_error();
       }
-      $row=mysql_fetch_row($result); // Query result in $row speichern und weiter machen
+      $row=mysqli_fetch_row($result); // Query result in $row speichern und weiter machen
       // nur wenn ein Wert geliefert wird, weiter machen!
       if ($row != false) {
       // gefundene ID in Variable $einsatzart_id parken
@@ -124,12 +129,12 @@ else
       }
       // EINSATZART STOP
       // TICKERKAT START
-      $sql = "select id from ".$db_name.".".$dbprefix."eiko_tickerkat where title ='" . mysql_real_escape_string(str_replace(",","",$matches[0])) . "' LIMIT 1";
-      $result = mysql_query($sql); // Query ausfâhren
+      $sql = "select id from ".$db_name.".".$dbprefix."eiko_tickerkat where title ='" . mysqli_real_escape_string(str_replace(",","",$matches[0])) . "' LIMIT 1";
+      $result = mysqli_query($con,$sql); // Query ausfâ??hren
       if (!$result) { // Bei Fehler abbruch
         echo mysql_error();
       }
-      $row=mysql_fetch_row($result); // Query result in $row speichern und weiter machen
+      $row=mysqli_fetch_row($result); // Query result in $row speichern und weiter machen
       // nur wenn ein Wert geliefert wird, weiter machen!
       if ($row != false) {
       // gefundene ID in Variable $ticketkat parken
@@ -144,12 +149,12 @@ else
 	foreach ($fwarray as $value) {
 		$value=trim($value); // Leerzeichen aus String entfernen
 		$value=str_replace("UE","Ü",$value); // Sonderzeichen ersetzen, hier nur das ü
-		$sql = "select id from ".$db_name.".".$dbprefix."eiko_organisationen where upper(name) like '%" . mysql_real_escape_string($value) . "%' LIMIT 1"; // SQL Query zusammensetzen um die Orga ID zu bekommen
-		$result = mysql_query($sql); // Query ausführen
+		$sql = "select id from ".$db_name.".".$dbprefix."eiko_organisationen where upper(name) like '%" . mysqli_real_escape_string($value) . "%' LIMIT 1"; // SQL Query zusammensetzen um die Orga ID zu bekommen
+		$result = mysqli_query($con,$sql); // Query ausführen
 		if (!$result) { // Bei Fehler abbruch
 			echo mysql_error();
 		}
-		$row=mysql_fetch_row($result); // Query result in $row speichern und weiter machen
+		$row=mysqli_fetch_row($con,$result); // Query result in $row speichern und weiter machen
 		// nur wenn ein Wert geliefert wird, weiter machen!
 		if ($row != false) {
 		  // gefundene ID in Array $id parken
@@ -207,8 +212,13 @@ else
 if ($debug == '0' and $allbug == '100') :
 $bug ='100';$bugtext ='Einsatzmeldung war erfolgreich</br>'; 
 
-// Datenbank verbinden
-$dbconnect=mysql_connect($host,$dbuser,$dbpass);
+$dbconnect = mysqli_connect($host, $dbuser,$dbpass,$db_name);
+// Check connection
+if (mysqli_connect_errno())
+  {
+  echo "Failed to connect to MySQL: " . mysqli_connect_error();
+  }
+
  // Werte in Datenbank eintragen
 $query = "INSERT INTO `".$db_name."`.`".$dbprefix."eiko_einsatzberichte` (`id`, `asset_id`, `ordering`, `data1`, `image`, `address`, `date1`, `date2`, `date3`, `summary`, `boss`, `boss2`, `people`, `department`, `desc`, `alerting`, `gmap_report_latitude`, `gmap_report_longitude`, `counter`, `gmap`, `presse_label`, `presse`, `presse2_label`, `presse2`, `presse3_label`, `presse3`, `updatedate`, `einsatzticker`, `notrufticker`, `tickerkat`, `auswahl_orga`, `vehicles`, `status`, `state`, `created_by`) VALUES ('', '0', '0', '".$einsatzart_id."', '', '".$location."', '".$zeit."', '0000-00-00 00:00:00.000000', '0000-00-00 00:00:00.000000', '".$msg."', '', '', '', '0', '', '".$alarmierungsart_id."', '".$lat."', '".$lon."', '', '1', 'Presselink', '', 'Presselink', '', 'Presselink', '', '".$updatetime."', '', '', '".$tickerkat."', '".$organisation_id."', '', '', '0', '".$user_id."');";
 
@@ -218,8 +228,12 @@ $query = "INSERT INTO `".$db_name."`.`".$dbprefix."eiko_einsatzberichte` (`id`, 
 //mysql_close($dbconnect);
 //
 //else:
-mysql_query($query) or die (mysql_error());  
-mysql_close($dbconnect);
+mysqli_query($dbconnect,$query);
+if (mysqli_connect_errno($dbconnect))
+  {
+  echo "Failed to connect to MySQL: " . mysqli_connect_error();
+  }  
+mysqli_close($dbconnect);
 //endif;
 endif;
 
