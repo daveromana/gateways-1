@@ -28,8 +28,12 @@ $db_name 	=$config->db;
 $dbprefix 	=$config->dbprefix;
 
 
-mysql_connect($host, $dbuser,$dbpass) or die ("Keine Verbindung moeglich");
-
+$con = mysqli_connect($host, $dbuser,$dbpass,$db_name);
+// Check connection
+if (mysqli_connect_errno())
+  {
+   echo "Failed to connect to MySQL: " . mysqli_connect_error();
+  }
 date_default_timezone_set('Europe/Berlin'); 
 //date_default_timezone_set('UTC');
 setlocale(LC_ALL, 'de_DE.utf8');
@@ -51,17 +55,17 @@ $bugtext 	= 'Fehler bei der Übertragung: </br>';
 
 
 // Übergabe-Parameter aus Url auslesen
-$user = mysql_real_escape_string(stripslashes($_GET['user']));
-$apikey = mysql_real_escape_string(stripslashes($_GET['apikey']));
-$timestamp = mysql_real_escape_string(stripslashes($_GET['zeit'])); 
+$user = mysqli_real_escape_string($con,stripslashes($_GET['user']));
+$apikey = mysqli_real_escape_string($con,stripslashes($_GET['apikey']));
+$timestamp = mysqli_real_escape_string($con,stripslashes($_GET['zeit'])); 
 $zeit = date("Y-m-d H:i:s",$timestamp); 	//Formatiert den Timestamp um in Y-m-d H:i:s zum speichern in die DB
 $updatetime = date( "Y-m-d H:i:s"); 
-$ort =  mysql_real_escape_string(stripslashes($_GET['ort']));
-$kat = mysql_real_escape_string(stripslashes($_GET['kat']));
-$msg = mysql_real_escape_string(stripslashes($_GET['msg']));
-$lon  = mysql_real_escape_string(stripslashes($_GET['lon']));
-$lat = mysql_real_escape_string(stripslashes($_GET['lat']));
-$debug = mysql_real_escape_string(stripslashes($_GET['debug']));
+$ort =  mysqli_real_escape_string($con,stripslashes($_GET['ort']));
+$kat = mysqli_real_escape_string($con,stripslashes($_GET['kat']));
+$msg = mysqli_real_escape_string($con,stripslashes($_GET['msg']));
+$lon  = mysqli_real_escape_string($con,stripslashes($_GET['lon']));
+$lat = mysqli_real_escape_string($con,stripslashes($_GET['lat']));
+$debug = mysqli_real_escape_string($con,stripslashes($_GET['debug']));
 
 
 //if ($debug =='1') :
@@ -138,27 +142,31 @@ else
 if ($debug == '0' and $allbug == '100') :
 $bug ='100';$bugtext ='Einsatzmeldung war erfolgreich</br>'; 
 
-// Datenbank verbinden
-$dbconnect=mysql_connect($host,$dbuser,$dbpass);
+$dbconnect = mysqli_connect($host, $dbuser,$dbpass,$db_name);
+// Check connection
+if (mysqli_connect_errno())
+  {
+  echo "Failed to connect to MySQL: " . mysqli_connect_error();
+  }
+
  // Werte in Datenbank eintragen
 $query = "INSERT INTO `".$db_name."`.`".$dbprefix."eiko_einsatzberichte` (`id`, `asset_id`, `ordering`, `data1`, `image`, `address`, `date1`, `date2`, `date3`, `summary`, `boss`, `boss2`, `people`, `department`, `desc`, `alerting`, `gmap_report_latitude`, `gmap_report_longitude`, `counter`, `gmap`, `presse_label`, `presse`, `presse2_label`, `presse2`, `presse3_label`, `presse3`, `updatedate`, `einsatzticker`, `notrufticker`, `tickerkat`, `auswahl_orga`, `vehicles`, `status`, `state`, `created_by`) VALUES ('', '0', '0', '".$einsatzart_id."', '', '".$ort."', '".$zeit."', '0000-00-00 00:00:00.000000', '0000-00-00 00:00:00.000000', '".$msg."', '', '', '', '0', '', '".$alarmierungsart_id."', '".$lat."', '".$lon."', '', '1', 'Presselink', '', 'Presselink', '', 'Presselink', '', '".$updatetime."', '', '', '', '".$organisation_id."', '', '', '1', '".$user_id."');";
- 
- 
 
 //if ($debug =='1') :
 //echo '<br/>Insert-Query:<br/>'.$query.'<br/><br/>Debug-Modus aktiviert. Es erfolgte kein DB-Eintrag !!<br/>';
 //mysql_close($dbconnect);
 //
 //else:
-mysql_query($query) or die (mysql_error());  
-mysql_close($dbconnect);
+mysqli_query($dbconnect,$query);
+if (mysqli_connect_errno($dbconnect))
+  {
+  echo "Failed to connect to MySQL: " . mysqli_connect_error();
+  }  
+mysqli_close($dbconnect);
 //endif;
 endif;
 
-
-
 echo $bug;  // Response Code ausgeben
-
 
 //      GET-Variabeln (*=Pflichtvariabeln) :
 //      $user    = *Benutzername (einzugeben in den Optionen Ihres Programmes)
@@ -182,7 +190,5 @@ echo $bug;  // Response Code ausgeben
 //       55 = Einsatzort fehlt
 //       13 = Username falsch
 //        0 = Api-Key falsch
-
-
 
 ?>
